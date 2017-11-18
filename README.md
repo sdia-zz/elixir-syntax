@@ -714,3 +714,127 @@ end
 # at compile time :
 warning: this clause cannot match because a previous clause at line 2 always matches
 ```
+
+
+
+# Recursion
+
+Because of immutability recursion is needed...
+
+
+```elixir
+defmodule Recursion do
+
+    # the base case
+    def print_multiple_times(msg, n) when n <= 1 do
+        IO.puts msg
+    end
+
+    # second definition makes sure we get exactly one step closer to base case
+    def print_multiple_times(msg, n) do
+        IO.puts msg
+        print_multiple_times(msg, n-1)
+    end
+end    
+```
+
+
+## Reduce and map algorithms
+
+```elixir
+# sum a list of numbers ... reduce algorithm
+defmodule Math do
+    def sum_list([], accumulator) do
+        accumulator
+    end
+
+    def sum_list([head | tail], accumulator) do
+        sum_list(tail, head + accumulator)
+    end
+end    
+
+# double all values in list ... map algorithm
+defmodule Math do
+    def double_each([]) do
+        []
+    end
+    def double_each([head | tail ]) do
+        [head * 2 | double_each(tail)]
+    end
+end
+```
+
+
+In practice, recursion is not used in Elixir...
+```elixir
+> Enum.reduce([1,2,3], 0, fn(x, acc) -> x + acc end)
+6
+
+> Enum.map([1,2,3], fn(x) -> x * 2 end)
+[2,4,6]
+```
+
+# Enumerables and streams
+
+## Enumerables
+
+Elixir provides the concept of enumerables and the `Enum` module to
+work with them. `list` and `map` are examples of enumerables, however
+the `Enum` module can work with any data type that implements the **Enumerable protocol**
+
+```elixir
+> Enum.map([1, 2, 3], &(&1 * 2))
+[2, 4, 6]
+
+> Enum.map(%{1 => 2, 3 => 4}, fn {k, v} -> k * v end)
+[2, 12]
+
+
+# with range
+> Enum.map(1..3, &(&1 * 2))
+[2, 4, 6]
+> Enum.reduce(1..3, &+/2)
+6
+```
+
+## Eager vs Lazy
+
+All the functions in the ```Enum``` are eager, functions expect enumerable and return list back. When performing multiple operations, each operation generate an intermediate list...
+
+```elixir
+> odd? = &(rem(&1, 2) != 0)
+> Enum.filter(1..3, odd?)
+[1, 3]
+
+# intermediate lists are generated...
+> 1..100_000 |> Enum.map( &(&1 * 3)) |> Enum.filter(odd?) |> Enum.sum
+```
+
+
+## Streams
+
+`Stream`, a lazy alternative to `Enum`
+
+```elixir
+
+> 1..100_000 |> Stream.map(&(&1 * 3))
+... stream...
+
+# composable
+> 1..100_000 |> Stream.map(&(&1 * 3)) |> Stream.filter(odd?)
+
+# creating streams
+> stream = Stream.cycle([1,2,3])
+> Enum.take(stream, 10)
+[1, 2, 3, 1, 2, 3, 1, 2, 3, 1]
+
+# generate values from initial given value
+> stream = Stream.unfold("hełło", &String.next_code-point\1)
+> Enum.take(stream, 3)
+["h", "e", "ł"]
+
+# streamify a resource...
+> stream = File.stream("/path/to/file")
+> Enum.take(stream, 10)
+# fetch the first 10 lines...
+```
