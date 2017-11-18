@@ -139,16 +139,16 @@ true
 # the & shorthand
 > add = &(&1 + &2)
 
+# clause and guards
+> f = fn
+>   x, y when x > 0  -> x + y
+>   x, y -> x * y
+> end
+
 ```
 
 
 ## (linked) Lists
-
-Lists are stored in memory as linked lists,
-
-* list length computation is linear
-* performance of list concatenation depends of left-hand list length
-
 
 ```elixir
 > [1, 2, true, :hello]
@@ -192,6 +192,7 @@ Lists are stored in memory as linked lists,
 > list ++ 4        # traverse 4 elements...
 ```
 
+
 ## Tuples
 
 ```elixir
@@ -231,3 +232,256 @@ Elixir guidance
 * there is `elem\2` for tuples but not for lists
 * `size` means constant time
 * `length` means linear time
+
+
+# Basic operators
+
+```elixir
++, -, *, /, div/2, rem/2   # arithmetics
+
+++, --  # list concatenation, dissociation
+
+<>      # string concatenation
+
+and, or, not  # only booleans
+
+||, &&, !     # boolean and other (all values except false and nil evaluate to true)
+
+== vs ===, the latter is more strict when comparing integers and float
+```
+
+
+# Pattern matching
+
+`=` is actually called _the match operator_
+
+```elixir
+> x = 1
+1
+
+> x
+1
+
+> 1 = x
+1
+
+> 2 = x
+... match error ...
+
+> {a,b,c} = {:hello, "world", 42}
+{:hello, "world", 42}
+
+> a
+:hello
+
+> b
+"world"
+
+> {:ok, result} = {:ok, 13}
+> result
+13
+
+> [a,b,c] = [1,2,3]
+> [head|tail] = [1,2,3]
+
+> list = [1,2,3]
+> [0|list]
+[0,1,2,3]
+
+# pin operator
+> x = 1
+> x = 2
+> x
+2
+> ^x = 1
+... match error...
+```
+
+
+# case, cond and if
+
+## case
+
+```elixir
+> case {1,2,3} do
+>      {1,2,3} -> "won't match"
+>      {1,x,3} -> "match and bind x to 2"
+>            _ -> "match any value"
+> end    
+"match and bind x to 2"
+
+
+> case 10 do
+>      ^x -> "match if x is 10, otherwise no bound"
+>       _ -> "will match"
+> end
+"will match"
+
+
+# guard
+> case {1,2,3} do
+>      {1,x,3} when x>0 -> "will match"
+>                     _ -> "would match if guard was not satisfied"
+> end
+"will match"
+
+
+# error in guard wont bubble
+> case 1 do
+>      x when raise_error() -> "won't match"
+>      x -> "Got #{x}"
+> end     
+
+
+# CaseClauseError
+> case :ok do
+>      :error -> "won't match"
+> end     
+... CaseClauseError ...
+```
+
+
+## cond
+
+`cond` check different conditions and find the first one that evaluates to `true`.
+
+```elixir
+
+> cond do
+>     2 + 2 == 5 -> "this will not be true"
+>     2 * 2 == 3 -> "nor this"
+>     1 + 1 == 2 -> "this will"
+> end    
+"this will"
+
+
+# CondClauseError
+> cond do
+>     false -> "won't be true"
+> end    
+... CondClauseError ...
+
+
+# catch all clause
+> cond do
+>     2 + 2 == 5 -> "this will not be true"
+>     2 * 2 == 3 -> "nor this"
+>     true -> "this is always true (equivalent to else)"
+> end    
+"this is always true (equivalent to else)"
+
+
+# any value besides nil and false are true
+> cond do
+>     hd [1,2,3] -> "1 is considered true"
+> end    
+"1 is considered true"
+```
+
+
+## if and unless
+
+```elixir
+> if true do
+>     "this works"
+> end    
+"this works"
+
+
+> unless true do
+>     "this will never happen"
+> end    
+
+
+> if nil do
+>     "this won't happen"
+> else
+>     "this will"
+> end    
+"this will"
+```
+
+## do / end blocks
+
+`if/2` and `unless\2` are macros...
+
+```elixir
+# passing arguments using keywords list
+> if true, do: 1 + 2
+3
+
+> if false, do: :this, else: :that
+:that
+
+> if true, do: (
+>     a = 1 + 2
+>     a + 10
+> )
+13
+```
+
+
+# Binaries, strings and char lists
+
+## UTF-8 and Unicode
+
+```elixir
+> string = "hełło"
+"hełło"
+> byte_size(string)
+7
+> String.length string
+5
+
+# get character code point
+> ?a
+97        # 1 byte
+> ?ł
+322       # 2 bytes
+
+
+# split by codepoints
+> String.codepoints "hełło"
+["h", "e", "ł", "ł", "o"]
+```
+
+## Binaries (bitstrings)
+
+a binary is defined using `<<>>`
+```elixir
+> <<0, 1, 2, 3>>
+<<0, 1, 2, 3>>
+
+> byte_size <<0, 1, 2, 3>>
+4
+
+> String.valid?(<<239,191,19>>)
+false
+
+# string concatenation is actually a binary operation
+> <<0,1>> <> <<2,3>>
+<<0,1,2,3>>
+
+# common trick...
+> "hełło" <> <<0>>
+<<104, 101, 197, 130, 197, 130, 111, 0>>
+
+
+# each number given to a binary is meant to represent a byte
+> <<255>>
+<<255>>
+
+> <<256>>
+<<0>>      # truncated to byte
+
+> <<256 :: size(16)>> # use 16 bits (2 bytes) to store the number
+<<1,0>>
+
+> <<256 :: utf8 >>   # the number is a code code point
+"Ā"
+
+> <<256 :: utf8, 0>>
+<<196, 128, 0>>
+```
+
+stop page 51, to be continued
