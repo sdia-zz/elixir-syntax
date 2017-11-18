@@ -624,7 +624,7 @@ true
 Captured named functions behave like anonymous function, they can be assigned to
 variables and passed as arguments.
 
-```elixir 
+```elixir
 > (&is_function/1).(fun)
 true
 
@@ -837,4 +837,186 @@ All the functions in the ```Enum``` are eager, functions expect enumerable and r
 > stream = File.stream("/path/to/file")
 > Enum.take(stream, 10)
 # fetch the first 10 lines...
+```
+
+
+# Processes
+
+Elixir's processes are extremely lightweight in terms of memory and CPU, it's not
+uncommon to have tens of thousand of processes running simultaneously.
+
+## spawn
+
+```elixir
+> spawn fn -> 1 + 2 end
+#PID<0.43.0>
+
+
+> pid = spawn fn -> 1 + 2 end
+> Process.alive?(pid)
+false
+
+
+# get the pid of current process
+> self()
+> Process.alive?(self())
+true
+```
+
+
+
+## send and receive
+
+```elixir
+
+> send self(), {:hello, "world"}
+{:hello, "world"}
+
+> receive do
+>   {:hello, msg} -> msg
+>   {:world, msg} -> msg
+> end
+"world"
+```
+
+Note:
+
+* `send/2` is not blocking
+* when a message is sent it goes to the process mailbox
+* `receive/1` goes through the mailbox and wait until a msg matches its guard
+* `receive/1` supports guards and many clauses
+* if there is no msg matching `receive/2` waits indefinitely, unless a timeout was specified.
+
+
+```elixir
+# receive/1 with timeout
+> receive do
+>       {:hello, msg} -> msg
+> after
+        # a timeout can be 0 if the msg is expected
+>       1_000 -> "nothing after 1 second"    expected to be in inbox.
+> end
+```
+
+Complete example...
+```elixir
+> parent = self()
+> spawn fn -> send(parent, {:hello, self()}) end
+> receive do
+>   {:hello, pid} -> "Got hello from #{inspect pid}"
+> end
+"Got hello from #PID<0.48.0>"
+
+# flushes and print all messages in mailbox
+> send self(), :hello
+:hello
+> flush()
+:hello
+:ok
+```
+
+
+## Links
+
+Links are usefull when the failure of one process needs to propagate to another one.
+
+
+```elixir
+> self()
+#PID<0.41.0>
+
+> spawn_link fn -> raise "oops" end
+... exit from PID 41 ...
+... process PID X raised an exception
+```
+
+
+## Tasks
+
+`spawn/1` and `spawn_link/1` are basic primitives for creating processes, `task`
+is the most common abstractions that build on top of them...
+
+
+```elixir
+> Task.start fn -> raise "oops" end
+{:ok, #PID<0.55.0>}
+# better error report
+```
+
+
+## State
+
+Where to keep application configuration ? Processes are the most common answer.
+
+
+```elixir
+# a module that starts new processes as a key-value store
+defmodule KV do
+
+    # start the loop process
+    def start_link do
+        Task.start_link(fn -> loop(%{}) end)
+    end
+
+    # wait for msg and perform appropriate action
+    defp loop(map) do
+        receive do
+            {:get, key, caller} ->
+                send caller, Map.get(map, key)
+                loop(map)
+
+            {:put, key, value} ->
+                loop(Map.put(map, key, value))
+        end
+    end
+end
+
+> {:ok, pid} = KV.start_link
+{:ok, #PID<0.62.0>}
+
+> send pid, {:get, :hello, self()}
+{:get, :hello, #PID<0.41.0>}
+
+> flush()
+nil  # no key yet
+:ok
+
+# let's put in a key
+> send pid, {:put, :hello, :world}
+{:put, :hello, :world}
+
+> send pid, {:get, :hello, self()}
+{:get, :hello, #PID<0.41.0>}
+
+> flush()
+:world
+:ok
+
+# the process keeps a state, and sending message update the state
+
+# let's give the PID an explicit name
+> Process.register(pid, :kv)
+true
+
+> send :kv, {:get, :hello, self()}
+{:get, :hello, #PID<0.41.0>}
+
+> flush()
+:world
+:ok
+```
+
+## Agent
+
+`Agent` is abstraction around state, it provides state, and name registration
+
+```elixir
+> {:ok, pid} = Agent.start_link(fn -> %{} end)
+{:ok, #PID<0.41.0>}
+
+> Agent.update(pid, fn map -> Map.put(map, :hello, :world) end)
+:ok
+
+> Agent.get(pid, fn map -> Map.get(map, :hello) end)
+:world
 ```
