@@ -624,7 +624,7 @@ true
 Captured named functions behave like anonymous function, they can be assigned to
 variables and passed as arguments.
 
-```
+```elixir 
 > (&is_function/1).(fun)
 true
 
