@@ -485,3 +485,232 @@ false
 ```
 
 stop page 51, to be continued
+
+
+# Keywords and maps
+
+todo
+
+
+# Modules and Functions
+
+A module groups several function, e.g. the `String` module.
+
+
+```elixir
+# create a module
+> defmodule Math do
+>     def sum(a, b) do
+>         a + b
+>     end
+> end
+
+> Math.sum 1 2
+3
+```
+
+## Compilation
+
+```elixir
+$ cat math.ex
+
+defmodule Math do
+    def sum(a, b) do
+        a + b
+    end
+end
+
+
+$ elixirc math.ex
+$ iex
+> Math.sum 1 2
+3
+```
+
+Elixir project structure :
+* `ebin/` contains the compiled bytecode
+* `lib/` contains elixir code (`.ex` files)
+* `test/` contains tests (`.exs` files)
+
+
+## Scripted mode
+
+While `.ex` files are meant to be compiled, `.exs` files are for scripting.
+
+```
+$ cat math.exs
+
+def module Math do
+    def sum(a, b) do
+        a + b
+    end
+end
+
+IO.puts Math.sum 1 2
+
+$ elixir math.exs
+3 # the file compiles in memory and executed, no bytecode file is generated
+```
+
+
+## Named functions
+
+Private versus public function (`defp` vs. `def`)
+
+```elixir
+
+defmodule Math do
+
+    def sum(a, b) do      # public
+        do_sum(a, b)
+    end
+
+    defp do_sum(a, b) do   # private
+        a + b
+    end
+end
+
+IO.puts Math.sum(1,2)      # 3
+IO.puts Math.do_sum(1,2)   # UndefinedFunctionError
+```
+
+
+Using `clause` and `guard`
+
+```elixir
+defmodule Math do
+
+    def zero?(0) do
+        true
+    end
+
+    def zero?(x) when is_integer(x) do
+        false
+    end
+end    
+
+IO.puts Math.zero?(0)         #=> true
+IO.puts Math.zero?(1)         #=> false
+IO.puts Math.zero?([1, 2, 3]) #=> ** (FunctionClauseError)
+IO.puts Math.zero?(0.0)       #=> ** (FunctionClauseError)
+```
+
+
+Using keyword list format...
+
+```elixir
+defmodule Math do
+    def zero?(0), do: true
+    def zero?(x) when is_integer(x), do: false
+end    
+```
+
+
+## Function capturing
+Using the arity notation - `name/arity`, to retrieve named function as function type.
+
+```elixir
+$ iex math.exs
+> Math.zero?(0)
+true
+
+> fun = &Math.zero?/1
+> is_function(fun)
+true
+> fun.(0)
+true
+```
+
+Captured named functions behave like anonymous function, they can be assigned to
+variables and passed as arguments.
+
+```
+> (&is_function/1).(fun)
+true
+
+> fun = &(&1 + 1   # equivalent of : fn x -> x + 1 end.
+> fun.(1)
+2
+
+
+> fun = &List.flatten(&1, &2)
+> fun.([1, [[2], 3]], [4, 5])
+[1, 2, 3, 4, 5]
+
+
+# the following 3 are equivalent
+> fun = &List.flatten(&1, &2)
+> fun = fn (list, tail) -> List.flatten (list, tail) end
+> fun = &List.flatten/2
+```
+
+
+## Default arguments
+
+```elixir
+defmodule Concat do
+    def join (a, b, sep \\ "") do
+        a <> sep <> b
+    end
+end
+
+IO.puts Concat.join("Hello", "world")      #=> Hello world
+IO.puts Concat.join("Hello", "world", "_") #=> Hello_world
+```
+
+
+Default values are not evaluated during function definition, only when call.
+
+```elixir
+> defmodule DefaultTest do
+>     def dowork(x \\ "hello") do
+>         x
+>     end
+> end
+
+> DefaultTest.dowork
+"hello"
+
+> DefaultTest.dowork 123
+123
+
+> DefaultTest.dowork
+"hello"
+```
+
+If a function with default values has multiple clauses, a function head is required...
+
+```elixir
+defmodule Concat do
+    def join (a, b \\ nil, sep \\ "")
+
+    def join (a, b, _sep) when is_nil(b) do
+        a
+    end
+
+    def join(a, b, sep) do
+        a <> sep <> b
+    end
+end
+
+```
+
+
+When using default values, be carefull of overlapping function definition...
+
+```elixir
+defmodule Concat do
+    def join(a, b) do
+        IO.puts "...first join"
+        a <> b
+    end
+
+    def join(a, b, sep \\ "") do
+        IO.puts "...second join"
+        a <> sep <> b
+    end
+end
+
+# at compile time :
+warning: this clause cannot match because a previous clause at line 2 always matches
+```
