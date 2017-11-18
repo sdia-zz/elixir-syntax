@@ -27,8 +27,9 @@
 
 
 
-# Basic operators
+# Basic types
 
+## Basics
 ``` elixir
 1            # integer
 0x1F         # integer
@@ -46,7 +47,11 @@ rem 10, 3
 # function arity matters
 > h myfunction/1
 > h myfunction/2
+```
 
+
+## Booleans
+```elixir
 # bool
 > true
 true
@@ -59,11 +64,22 @@ true
 
 > is_boolean 1
 false
+```
 
 
+## Atoms
+
+```elixir
 # an atom is its own value
 > :hello
 :hello
+
+> is_atom :hello
+true
+
+# aliases start in upper case are also atoms
+> is_atom Hello
+true
 
 > :hello == :world
 false
@@ -75,3 +91,143 @@ true
 true
 
 ```
+
+
+## Strings
+
+``` elixir
+> "hellö"
+"hellö"
+
+# interpolation
+> "hellö #{:world}"
+"hellö world"
+
+
+# escape
+> IO.puts "hello\nworld"
+
+# strings are binaries
+> is_binary("hellö")
+true
+
+> byte_size "hellö"
+6
+
+> String.length "hellö"
+5
+
+> String.upcase "hellö"
+"HELLÖ"
+```
+
+
+## Anonymous functions
+
+```elixir
+> add = fn a, b -> a + b end
+
+> add. 1 2
+3
+
+> is_function add
+true
+
+> is_function add 2
+true
+
+# the & shorthand
+> add = &(&1 + &2)
+
+```
+
+
+## (linked) Lists
+
+Lists are stored in memory as linked lists,
+
+* list length computation is linear
+* performance of list concatenation depends of left-hand list length
+
+
+```elixir
+> [1, 2, true, :hello]
+[1, 2, true, :hello]
+
+
+# concatenation
+> [1,2,3] ++ [4,5,6]
+[1,2,3,4,5,6]
+
+#hd and tl
+> list = [1,2,3]
+> hd list
+1
+
+> tl list
+[2,3]
+
+
+# single quotes VS double-quotes
+'hello' == "hello"
+false
+
+> [104, 101, 108, 108, 111]
+'hello'
+
+> i 'hello'
+... data type List ...
+```
+
+
+Lists are stored in memory as linked lists,
+
+* list length computation is linear
+* performance of list concatenation depends of left-hand list length
+
+
+```elixir
+> list = [1,2,3]
+> [0] ++ list      # traverse only 1 element before append
+> list ++ 4        # traverse 4 elements...
+```
+
+## Tuples
+
+```elixir
+> {1,2, :hello, false}
+{1,2, :hello, false}
+
+> tuple_size {:ok, "hello"}
+2
+
+> mytuple = {:ok, "hello"}
+{:ok, "hello"}
+
+> elem(tuple, 1)
+"hello"
+
+> tuple_size tuple
+2
+
+
+# immutability
+> put_elem tuple 1 "world"
+{:ok, "world"}
+
+> tuple
+{:ok, 'hello'}
+```
+
+Tuples are stored contiguously in memory:
+
+* getting tuple size is fast
+* accessing element by index is fast
+* update or adding new element requires new tuple, it's an expensive operation
+
+
+Elixir guidance
+
+* there is `elem\2` for tuples but not for lists
+* `size` means constant time
+* `length` means linear time
