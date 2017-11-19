@@ -1274,13 +1274,130 @@ end
 ```
 
 
+# Module attributes
+
+Module attributes serve 3 purposes:
+
+1. annotate the module with info to be used by user or vm
+2. work as constant
+3. work as temporary module storage to be used during compilation
 
 
+## As annotations
+
+Some reserved attributes:
+
+* `@moduledoc` doc of current module
+* `doc` doc for functions or macros that follows the attribute
+* `@vsn` version of module
+* `@behaviour` (british spelling) to specify OTP and user-defined behaviour
+* `@before_compile` hook that will be invoked before compilation
+
+```elixir
+# explicitly set the version attribute of module
+defmodule MyServer do
+    @vsn 2
+end
+
+# fyi @vsn is used by code reloading mecanism, if not provided is set to md5 of module code
 
 
+# add some documentation
+defmodule Math do
+    @moduledoc"""
+        Provides math-related functions.
+
+        ## Examples
+
+        iex> Math.sum(1, 2)
+        3
+
+    """
+
+    @doc """
+        Calculates the sum of two numbers.
+    """
+    def sum(a, b), do: a + b
+end    
+```
 
 
+## As constants
 
+```elixir
+defmodule MyServer do
+    @initial_state %{ host: "127.0.0.1", port: 3456 }
+    IO.inspect @initial_state
+end
+
+# undefined attribute will raise warning
+> defmodule MyServer do
+>     @unknown
+> end
+warning: ... undefined attr... explicitly set before access
+
+
+# attributes can also be read inside functions
+defmodule MyServer do
+
+    @my_data 14
+    def first_data, do: @my_data
+
+    @my_data 13
+    def second_data, do: @my_data
+end    
+
+> MyServer.first_data
+14
+> MyServer.second_data
+13
+> MyServer.first_data
+14
+```
+
+
+## As temporary storage
+
+`Plug` is a common foundation for building web libraries and framework.
+`Plug` allows developers to define their own plugs which can be run in a web server.
+
+```elixir
+defmodule MyPlug do
+
+    use Plug.Builder
+
+
+    # use plug/1 macro to connect function set_header
+    # under the hood function is stored in @plug attribute
+    plug :set_header
+    plug :send_ok
+
+    def set_header(conn, _opts) do
+        put_resp_header(conn, "x-header", "set")
+    end
+
+    def sen_ok(conn, _opts) do
+        send(conn, 200, "ok")
+    end
+end
+
+IO.puts "Running MyPlug with Cowboy on http://localhost:4000"
+Plug.Adapters.Cowboy.http MyPlug, []
+```
+
+Tags in `ExUnit` are used to annotate tests...
+
+```elixir
+defmodule MyTest do
+
+    use ExUnit.Case
+
+    @tag :external
+    test "contact external service" do
+        # ...
+    end
+end
+```
 
 
 
