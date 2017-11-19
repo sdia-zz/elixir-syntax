@@ -1399,8 +1399,111 @@ defmodule MyTest do
 end
 ```
 
+## Conclusion
+
+Attributes are fundamental, they will really shine once combine with macros capability to do meta-programming.
 
 
+# Structs
+
+Remember about maps:
+
+```elixir
+> map = %{a: 1, b: 2}
+%{a: 1, b: 2}
+
+> map[:a]
+1
+
+> %{map | a :3}
+%{a: 3, b: 2}
+```
+
+... `structs` are extensions built on top of maps that provide compile-time checks and default values.
+
+
+```elixir
+defmodule User do
+
+    defstruct name: "John", age: 27  # defining fields and default value
+end
+
+> %User{}
+%User{age: 27, name: "John"}
+
+> %User{name: "Meg"}
+%User{age: 27, name: "Meg"}
+
+# compile-time guarantee: only the field defined are allowed to exist
+> %User{oops: :field}
+... KeyError ...
+```
+
+## Accessing and updating structs
+
+```elixir
+> john = %User{}
+> john.name
+"John"
+
+> meg = %{john | name: "Meg"}
+
+# pattern matching
+> %User{name: name} = john
+> name
+"John"
+```
+
+
+## Structs are bare maps underneath
+
+``` elixir
+> is_map(john)
+true
+
+> john.__struct__
+User
+
+# however none of the maps protocols are available for structs
+> john[:name]
+... UndefinedFunctionError ...
+
+>Enum.each john, fn({field, value}) -> IO.puts(value) end
+... Protocol.UndefinedError ...
+
+# structs work with the functions from the Map module
+> kurt = Map.put(%User{}, :name, "Kurt")
+%User{age: 27, name: "Kurt"}
+
+> Map.merge(kurt, %User{name: "Yakashi"})
+%User{age: 27, name: "Takashi"}
+
+> Map.keys(john)
+[:__struct__, :age, :name]
+```
+
+## Default values and required keys
+
+```elixir
+# nil is assumed when no default is provided
+> defmodule Product do
+>     defstruct [:name]
+> end
+
+> %Product{}
+%Product{name: nil}
+
+
+# enforce keys definition
+> defmodule Car do
+>
+>     @enforce_keys [:make]
+>     defstruct [:model, :make]
+> end
+
+> %Car{}
+... ArgumentError the following keys must also be given ... Car: [:make]    
+```
 
 
 
