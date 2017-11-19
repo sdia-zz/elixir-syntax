@@ -1468,7 +1468,7 @@ User
 > john[:name]
 ... UndefinedFunctionError ...
 
->Enum.each john, fn({field, value}) -> IO.puts(value) end
+> Enum.each john, fn({field, value}) -> IO.puts(value) end
 ... Protocol.UndefinedError ...
 
 # structs work with the functions from the Map module
@@ -1504,6 +1504,149 @@ User
 > %Car{}
 ... ArgumentError the following keys must also be given ... Car: [:make]    
 ```
+
+
+# Protocols
+
+Protocols are mechanism to achieve polymorphism. Let's implement a generic `size` protocols...
+
+
+```elixir
+defprotocol Size do
+
+    @doc "Calculate the size (and not the length!) of a data structure"
+
+    def size(data)
+    end
+
+    defimpl Size, for: BitString do
+        def size(string), do: byte_size(string)
+    end
+
+    defimpl Size, for: Map do
+        def size(map), do: map_size(map)
+    end
+
+    defimpl Size, for: Tuple do
+        def size(tuple), do: tuple_size(tuple)
+    end
+
+end
+
+> Size.size("foo")
+3
+
+# passing data that does not implement the protocol raises error
+> Size.size([1,2,3])
+... Protocol.UndefinedError ...
+>
+```
+
+It is possible to implement protocols for all Elixir data types:
+`Atom`, `BitString`, `Float`, `Function`, `Integer`, `List`, `Map`, `PID`, `Port`, `Reference`, `Tuple`
+
+
+## Protocols and structs
+
+The power of Elixir extensibility comes when protocols and structs are used together.
+
+Structs do not share protocol with maps...
+
+```elixir
+defimpl Size, for: Mapset do
+    def size(set), do: Mapset.size(set)
+end
+```
+
+Structs can be used to defined new data types, they ca implement all relevants protocols...
+
+```elixir
+defmodule User do
+    defstruct [:name, :age]
+end
+
+...
+defimpl Size, for: User do
+    def size(_user), do: 2
+end
+```
+
+
+## Implementing Any
+
+Implementing protocols for many data types can be tedious.
+Elixir provides 2 options:
+
+1. derive the protocol implementation for our types
+2. automatically implement the protocol for all types.
+
+either case the protocol has to be implemented for `Any`.
+
+
+```elixir
+# APPROACH 1 - deriving
+defimpl Size, for: Any do
+    def size(_), fo: 0    # ahem this not reasonable though!
+end
+
+# we need to tell our struct to explicitly derive the Size protocol
+defmodule OtherUser do
+    @derive [Size]
+    defstruct [:name, :age]
+end
+
+
+# APPROACH 2 - fallback to any
+# fallback to Any only when an implementation cannot be found
+defprotocol Size do
+
+    @fallback_to_any true
+    def size(data)
+end
+
+
+defimpl Size, for: Any do
+    def size(_) do: 0
+end
+```
+
+
+## Built-in protocols
+
+```elixir
+# the Enumerable protocol
+> Enum.map [1,2,3], fn(x) -> x * 2 end
+> Enum.reduce 1..3, 0, fn(x, acc) -> x + acc end
+
+# the String.Chars protocol, exposed via to_string function
+> to_string :hello
+> "age: #{25}"   # calls to_string behind the scene
+
+# tuple do not implement the String.Chars protocol
+> tuple = {1,2,3}
+> "tuple: #{tuple}"
+... Protocol.UndefinedError ...
+
+# solution is the Inspect protocol
+# the Inspect protocol transforms any data type to readable textual
+> "tuple: #{inspect tuple}"
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
