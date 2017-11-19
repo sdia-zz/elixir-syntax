@@ -1633,7 +1633,114 @@ end
 ```
 
 
+# Comprehensions
 
+```elixir
+> for n <- [1,2,3,4,5], do: n * n
+```
+
+A comprehension is made of 3 parts: generators, filters and collectables.
+
+
+## Generators and filters
+
+```elixir
+# in the following...
+> for n <- [1,2,3,4,5], do: n * n
+
+# the generator is
+n <- [1,2,3,4,5]
+
+
+# generator can support pattern matching...
+> values = [good: 1, good: 2, bad: 3, good: 4]
+> for {:good, n} <- values, do: n * n
+[1, 4, 16]
+
+
+# filter ... as alternative to pattern matching
+> multiple_of_3? = fn(n) -> rem(n, 3) == 0 end
+> for n <- 0..5, multiple_of_3?.(n), do: n* n
+[0, 9]
+
+
+# multiple generators...
+> dirs = ['/home/mikey/', '/home/james/']
+> for dir <- dirs,
+>     file <- File.ls!(dir),
+>     path = Path.join(dir, file),
+>     File.regular?(path) do
+>   File.stat!(path).size
+
+
+# multiple generator for cartesian product
+> for i <- [:a, :b, :c],
+>     j <- [1, 2],
+>     do: {i, j}
+
+
+# Pythagorean triples:
+# a more advanced example of multi gen/filter
+defmodule Triple do
+
+    def pythagorean(n) when n > 0 do
+        for a <- 1..n,
+            b <- 1..n,
+            c <- 1..n,
+            a + b + c <= n,
+            a * a + b * b == c * c,
+            do: {a, b, c}
+    end
+end
+
+# Pythagorean triples:
+# an optimized version
+defmodule Triple do
+
+    def pythagorean(n) when n > 0 do
+        for a <- 1 .. n - 2,
+            b <- a + 1 .. n - 1,
+            c <- b + 1 .. n,
+            a + b >= c,
+            a * a + b * b == c * c,
+            do: {a, b, c}
+    end
+end
+
+
+# Bitstring generators
+> pixels = << 213, 45, 132, 64, 76, 32, 76, 0, 0, 234, 32, 15 >>
+> for << r::8, g::8, b::8 <- pixels >>, do: {r, g, b}
+[{213, 45, 132}, {64, 76, 32}, {76, 0, 0}, {234, 32, 15}]
+```
+
+
+## The `:into` option
+
+Pass generator into different data structures than list.
+
+```elixir
+# :into accepts any structure that implements the Collectable protocol
+> for << c <- "hello world" >>, c != ?/s, into: "", do: <<c>>
+"helloworld"
+
+
+# update value in map, without touching the key
+> for {key, val} <- %{"a" => 1, "b" -> 2}, into: %{}, do: {key, val * val}
+%{"a" => 1, "b" => 4}
+
+
+# using streams
+# the following prints everything from stdin in upper case
+# ctrl-c to exit
+> stream = IO.stream(:stdio, :line)
+> for line <- stream, into: stream stream do
+>     String.upcase(line) <> "\n"
+> end
+```
+
+
+# Sigils
 
 
 
