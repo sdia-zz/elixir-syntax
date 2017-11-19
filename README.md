@@ -1106,3 +1106,195 @@ stop at page 103, to be continued...
 
 
 # alias, require and import
+
+```elixir
+# alias the module so it can be called as Bar intead of Foo.Bar
+alias Foo.Bar, as: Bar
+
+# require the module in order to use its macros
+require Foo
+
+# Import functions from Foo so they can be called without the `Foo.` prefix
+import Foo
+
+# Invoke the custom code defined in Foo as an extension point
+use Foo
+```
+
+
+Note:
+
+* `alias`, `require` and `import` are called directives because they have **lexical scope**
+* `use` is a common extension point
+
+
+
+## alias
+
+```elixir
+> alias Math.List, as: List
+
+# the following 2 are equivalent
+> alias Math.List
+> alias Math.List, as: List
+
+# alias is lexically scoped...
+
+defmodule Math do
+    def plus(a, b) do
+        alias Math.List   # the alias is valid only inside plus/2
+        # ...
+    end
+
+    def minus(a, b) do
+        # ...
+    end
+end
+```
+
+
+`alias` behind the scene
+```elixir
+# an alias is a capitalized identifier which is converted to an atom at compilation time
+
+> is_atom(String)
+true
+
+> to_string(String)
+"Elixir.String"
+
+> :"Elixir.String" == String
+true
+```
+
+
+## require
+
+In order to use macros, you need to opt-in by requiring the module they
+are defined in.
+
+```elixir
+> Integer.is_odd(3)
+... undefined function error ...
+
+> require Integer
+Integer
+
+> Integer.is_odd(3)
+true
+```
+
+
+## import
+
+```elixir
+# only: is a best practice, equivalent of avoiding Python's import *
+> import List, only: [duplicate: 2]
+List
+
+> duplicate :ok, 3
+[:ok, :ok, :ok]
+
+# to import all macros
+import Integer, only: :macros
+
+# to import all functions
+import Integer, only: :functions
+
+
+# import is lexically scoped too
+defmodule Math do
+    def f do
+        import List, only: [duplicate: 2]
+        # ...
+    end
+end
+```
+
+Note: `import`ing a module automatically `require`s it.
+
+
+## use
+
+to bring external functionality into the current lexical scope.
+
+```elixir
+# write unit tests using the ExUnit framework
+defmodule AssertionTest do
+    use ExUnit.Case, async: true
+
+    test "always pass" do
+        assert true
+    end
+end
+```
+
+using behind the scene
+
+```elixir
+# this module...
+defmodule Example do
+    use Feature, option: :value
+end
+
+# compiles to...
+defmodule Example do
+    require Feature
+    Feature.__using__( option: :value )
+end
+```
+
+
+## Module nesting
+
+```elixir
+# defining 2 modules: Foo and Foo.Bar
+defmodule Foo do
+    defmodule Bar do
+        # ...
+    end
+end
+
+# is equivalent to
+defmodule Elixir.Foo do
+    defmodule Elixir.Foo.Bar do
+        # ...
+    end
+
+    alias Elixir.Foo.Bar, as: Bar
+end
+```
+
+## Multi alias / immport / require / use
+
+```elixir
+# alias MyApp.Foo, MyApp.Bar and MyApp.Baz at once
+> alias MyApp.{Foo, Bar, Baz}
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#
