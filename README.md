@@ -1020,3 +1020,89 @@ true
 > Agent.get(pid, fn map -> Map.get(map, :hello) end)
 :world
 ```
+
+
+# IO and the file system
+
+## The IO module
+
+```elixir
+> IO.puts "hello world"
+hello world
+:ok
+
+> IO.gets "yes or no?"
+yes or no? yes
+"yes\n"
+
+# defaults are :stdin / :stdout, but can be changed
+> IO.puts :stderr, "hello world"
+hello world
+:ok
+```
+
+
+## The File module
+
+```elixir
+> {:ok, file} = File.open "Hello", [:write]
+{:ok, #PID<...>}
+
+> IO.binwrite file, "world"
+:ok
+
+> File.close file
+:ok
+
+> File.read "hello"
+{:ok, "world"}
+
+# Unix style file operation
+> h File.rm/1
+> h File.mkdir/1
+> h File.mkdir_p/1
+> h File.cp_r/2
+> h File.rm_rf/1
+
+# return the contents, and fail spectacularly in case
+> File.read! "hello"
+"world"   # instead of {:ok, "world"}
+
+> File.read "unlnown"
+{:error, :enoent}
+
+> File.read! "unknown"
+..."unknown": no such file or directory
+
+
+# handle different scenario using pattern matching
+case File.read(file) do
+    {:ok, body} -> # do sthg with body
+    {:error, reason } -> # handle error
+end
+
+
+# use (!) if file is known to be there
+{:ok, body} = File.read(file) # don't do this
+
+```
+
+
+## The Path module
+
+```elixir
+> Path.join("foo", "bar")
+"foo/bar"
+
+> Path.expand("~/hello")
+"Users/jose/hello"
+
+```
+
+
+## Processes and group leaders
+
+stop at page 103, to be continued...
+
+
+# alias, require and import
