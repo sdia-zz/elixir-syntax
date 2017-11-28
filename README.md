@@ -1799,6 +1799,67 @@ Pass generator into different data structures than list.
 
 # Sigils
 
+## Regular expressions
+Sigils are one of the mecanism for working with textual representations.
+
+```elixir
+# the most common sigil is ~r (regex)
+> regex = ~r/foo|bar/
+> "foo" =~ regex
+true
+> "bat" =~ regex
+false
+
+# i modifier makes case insensitive
+> "HELLO" =~ ~r/hello/
+false
+> "HELLO" =~ ~r/hello/i
+true
+
+# sigil support 8 different delimiters
+~r/hello/
+~r|hello|
+~r"hello"
+~r'hello'
+~r(hello)
+~r[hello]
+~r{hello}
+~r<hello>
+
+# depending on what you want to escape, yo can choose the appropriate delimiter.
+```
+
+## Strings, char lists, and word lists sigils
+
+Beside regular expressions, there are 3 other sigils:
+
+
+```elixir
+
+# String
+# ~s is used to generate string
+# ~s is useful when a string contains double quotes
+> ~s(this is a string with "double" quotes, not 'single' ones)
+this is a string with \"double\" quotes, not 'single' ones"
+
+
+# Char lists
+# ~c is usefull for generating char list that contains single quotes
+> ~c(this is a char list containing 'single quotes')
+'this a char list containing \'signle quotes\''
+
+
+# Word lists
+# ~w is used to generate lists of words
+> ~w(foo bar bat)
+["foo", "bar", "bat"]
+# accept modifiers c (char), s (string) and a (atom)
+> ~w(foo bar bat)a
+[:foo, :bar, :bat]
+
+
+```
+
 
 
 
