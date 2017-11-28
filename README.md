@@ -1102,13 +1102,70 @@ end
 
 ## Processes and group leaders
 
-stop at page 103, to be continued...
+`IO` devices are modelled as process in Erlang, that allows different nodes in the
+same network to exchange file process in order to read/write between nodes.
+
+```elixir
+# File.open/2 returns un tuple, IO module works with process
+> {:ok, file} = File.open "hello", [:write]
+{:ok, #PID<0.47.0>}
+
+# IO operations are processes operations
+# IO.write => IO will send a message to a process
+> pid = spawn fn -> receive do: (msg -> IO.inspect msg) end
+#PID<0.57.0>
+> IO.write(pid, "hello")
+{:io_request, #PID<0.41.0>, #Reference<0.0.8.91>, {:put_chars, :unicode, "hello"}}
+** (ErlangError) erlang error: :terminated
+
+# ^ failure because IO is expecting an unreturned result
+
+StringIO provides an implementation of the IO device message on top of strings:
+> {:ok, pid} = StringIO.open("hello")
+{:ok, #PID<0.43.0>}
+> IO.read(pid, 2)
+ "he"
+ ```
+
+Of all `IO` devices, there is one that is special to each process: the **group
+leader**. The GL writes to `:stdio`, it can be configured per process and can be
+used for example to forward console output.
+
+
+```elixir
+> IO.puts :stdio, "hello"
+hello
+:ok
+> IO.puts Process.group_leader, "hello"
+hello
+:ok
+```
+
+
+## `iodata` and `chardata`
+
+Functions IO and File accept list (in addition to binary), in that case special
+care is needed specially if the file is opened without encoding. A list may
+either represent a bunch of bytes or a bunch of characters and which one to use
+depends on the  encoding of the IO device.
+
+```elixir
+> IO.puts 'hello world'   # note the single quotes
+hello world
+:ok
+> IO.puts ['hello', ?\s, "world"]
+hello world
+:ok
+
+```
+
+
 
 
 # alias, require and import
 
 ```elixir
-# alias the module so it can be called as Bar intead of Foo.Bar
+# alias the module so it can be called as Bar instead of Foo.Bar
 alias Foo.Bar, as: Bar
 
 # require the module in order to use its macros
