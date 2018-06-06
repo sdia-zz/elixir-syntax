@@ -307,7 +307,7 @@ and, or, not  # only booleans
 >      {1,2,3} -> "won't match"
 >      {1,x,3} -> "match and bind x to 2"
 >            _ -> "match any value"
-> end    
+> end
 "match and bind x to 2"
 
 
@@ -330,13 +330,13 @@ and, or, not  # only booleans
 > case 1 do
 >      x when raise_error() -> "won't match"
 >      x -> "Got #{x}"
-> end     
+> end
 
 
 # CaseClauseError
 > case :ok do
 >      :error -> "won't match"
-> end     
+> end
 ... CaseClauseError ...
 ```
 
@@ -351,14 +351,14 @@ and, or, not  # only booleans
 >     2 + 2 == 5 -> "this will not be true"
 >     2 * 2 == 3 -> "nor this"
 >     1 + 1 == 2 -> "this will"
-> end    
+> end
 "this will"
 
 
 # CondClauseError
 > cond do
 >     false -> "won't be true"
-> end    
+> end
 ... CondClauseError ...
 
 
@@ -367,14 +367,14 @@ and, or, not  # only booleans
 >     2 + 2 == 5 -> "this will not be true"
 >     2 * 2 == 3 -> "nor this"
 >     true -> "this is always true (equivalent to else)"
-> end    
+> end
 "this is always true (equivalent to else)"
 
 
 # any value besides nil and false are true
 > cond do
 >     hd [1,2,3] -> "1 is considered true"
-> end    
+> end
 "1 is considered true"
 ```
 
@@ -384,20 +384,20 @@ and, or, not  # only booleans
 ```elixir
 > if true do
 >     "this works"
-> end    
+> end
 "this works"
 
 
 > unless true do
 >     "this will never happen"
-> end    
+> end
 
 
 > if nil do
 >     "this won't happen"
 > else
 >     "this will"
-> end    
+> end
 "this will"
 ```
 
@@ -487,9 +487,213 @@ false
 stop page 51, to be continued
 
 
-# Keywords and maps
+# Keyword lists and Maps
 
-todo
+Where it's all about associative data structures.
+
+
+## Keyword lists
+
+Check out the special syntax: `[key: value]` .
+
+This is very powerfull, because of the 3 characteristics:
+
+* keys are atoms
+* keys order are specified by developer
+* keys can be given more than once.
+
+```elixir
+> list = [{:a, 1}, {:b, 2}]
+[a: 1, b: 2]
+
+> list = [a: 1, b: 2]
+true
+
+# and lookup like this
+> list[:a]
+1
+```
+
+At the end of the day keyword lists are just lists:
+
+```elixir
+> list ++ [c: 3]
+[a: 1, b: 2, c: 3]
+
+> [a: 0] ++ list
+[a: 0, a: 1, b: 2]
+
+# On lookup first match is returned
+> new_list = [a: 0] ++ [a: 1, b: 2]
+> new_list[:a]
+0
+```
+
+How to write a nice DSL using keyword lists, they are also the default mecanism
+for passing options to functions in Elixir.
+
+```elixir
+# Ecto library
+> query = from w in Weather,
+        where: w.prcp > 0,
+        where: w.temp < 20,
+       select: w
+
+
+# if/2 macro
+> if false do :this else :that end
+:that
+
+# is equivalent to
+> if false, do: :this, else: :that
+:that
+
+# is equivalent to
+> if(false, [do: :this, else: :that])
+:that
+
+# and, as we've seen already, to this
+> if(false, [{:do, :this}, {:else, :that}])
+:that
+
+# thing to remember is brackets are optional when the keyword list is the last
+# argument of a function/macro.
+
+```
+
+
+## Maps
+
+Because keyword lists are great for passing value to function, if you need a
+data structure, key-value store, then map is the way to go.
+
+```elixir
+> map = %{:a => 1, 2 => :b}
+%{2 => :b, :a =>1}
+
+> map[:a]
+1
+> map[2]
+:b
+> map[:c]
+nil
+```
+
+
+Compared to keyword lists,
+
+
+* Maps allow any values as key,
+* Maps keys do not follow any ordering
+
+
+... also maps are better suited for pattern matching
+
+
+```elixir
+# an empty map matches all maps
+> %{} = %{:a => 1, 2 => :b}
+%{2 => :b, :a =>1}
+
+> %{:a => a} = %{:a => 1, 2 => :b}
+%{2 => :b, :a =>1}
+
+> a
+1
+
+> %{:c => c} = %{:a => 1, 2 => :b}
+** (MatchError) no match of right hand side value: %{2 => :b, :a => 1}
+```
+
+Variables usage,
+
+```elixir
+> n = 1
+1
+
+> map = %{n => :one}
+%{1 => :one}
+
+> map[n]
+:one
+
+> %{^n => :one} = %{1 => :one, 2 => :two, 3 => :three}
+%{1 => :one, 2 => :two, 3 => :three}
+```
+
+
+Map exposes an API similar to `Keyword` module
+
+
+```elixir
+> Map.get(%{:a => 1, 2 => :b}, :a)
+1
+
+> Map.put(%{:a => 1, 2 => b}, :c, 3)
+%{:a => 1, 2 => :b, :c => 3}
+
+> Map.to_list(%{:a => 1, 2 => :b})
+[{2, :b}, {:a, 1}]
+```
+
+Updating value reminds me of Elm...
+
+```elixir
+> map = %{:a => 1, 2 => :b}
+%{:a => 1, 2 => :b}
+
+> %{map | 2 => :two}
+%{:a => 1, 2 => :two}
+
+> %{map | :c => 3}
+** (KeyError) key :c not found in: %{2 => :b, :a => 1}
+```
+
+
+The special case of when keys are atoms
+
+```elixir
+# (a) keyword syntax can be used (all keys need to be atoms)
+> %{a: 1, b: 2}
+%{a: 1, b: 2}
+
+
+# (b) custom syntax can be used for accessing atom keys
+> map = %{:a => 1, 2 => :b}
+%{2 => :b, :a => 1}
+
+> map.a
+1
+
+> map.c
+** (KeyError) key :c not found in: %{2 => :b, :a => 1}
+```
+
+
+## Nested data structures
+
+```elixir
+> users = [
+  john: %{name: "John", age: 27, languages: ["Erlang", "Ruby", "Elixir"]},
+  mary: %{name: "Mary", age: 29, languages: ["Elixir", "F#", "Clojure"]}
+]
+
+
+> users[:john].age
+27
+
+> users = put_in users[:john].age, 31
+[john: %{age: 31, languages: ["Erlang", "Ruby", "Elixir"], name: "John"},
+  ...]
+
+
+# update_in allows to pass a function that controls how the update value changes
+> users = update_in users[:mary].languages, fn languages ->
+      List.delete(languages, "Clojure") end
+
+[...,
+ mary: %{age: 29, languages: ["Elixir", "F#"], name: "Mary"}]
+```
 
 
 # Modules and Functions
@@ -587,7 +791,7 @@ defmodule Math do
     def zero?(x) when is_integer(x) do
         false
     end
-end    
+end
 
 IO.puts Math.zero?(0)         #=> true
 IO.puts Math.zero?(1)         #=> false
@@ -602,7 +806,7 @@ Using keyword list format...
 defmodule Math do
     def zero?(0), do: true
     def zero?(x) when is_integer(x), do: false
-end    
+end
 ```
 
 
@@ -735,7 +939,7 @@ defmodule Recursion do
         IO.puts msg
         print_multiple_times(msg, n-1)
     end
-end    
+end
 ```
 
 
@@ -751,7 +955,7 @@ defmodule Math do
     def sum_list([head | tail], accumulator) do
         sum_list(tail, head + accumulator)
     end
-end    
+end
 
 # double all values in list ... map algorithm
 defmodule Math do
@@ -1375,7 +1579,7 @@ defmodule Math do
         Calculates the sum of two numbers.
     """
     def sum(a, b), do: a + b
-end    
+end
 ```
 
 
@@ -1402,7 +1606,7 @@ defmodule MyServer do
 
     @my_data 13
     def second_data, do: @my_data
-end    
+end
 
 > MyServer.first_data
 14
@@ -1559,7 +1763,7 @@ User
 > end
 
 > %Car{}
-... ArgumentError the following keys must also be given ... Car: [:make]    
+... ArgumentError the following keys must also be given ... Car: [:make]
 ```
 
 
