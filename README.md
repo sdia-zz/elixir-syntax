@@ -2109,6 +2109,8 @@ Coming soon
 Coming soon
 
 
-# Where to go next  [up](#table-of-contents)
+# Where to go next
+
+[up](#table-of-contents)
 
 Coming soon
