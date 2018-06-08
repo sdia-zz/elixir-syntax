@@ -1,5 +1,8 @@
 
 
+# Table of contents
+
+
 - [Table of contents](#table-of-contents)
 - [Basic types](#basic-types)
 - [Basic operators](#basic-operators)
@@ -26,7 +29,7 @@
 
 
 
-# Table of contents
+
 
 01. Introduction
 02. Basic
@@ -2087,33 +2090,25 @@ this is a string with \"double\" quotes, not 'single' ones"
 # accept modifiers c (char), s (string) and a (atom)
 > ~w(foo bar bat)a
 [:foo, :bar, :bat]
-
-
 ```
 
 
 
+# try, catch and rescue
+
+Coming soon
 
 
+# Typespecs and behaviours
+
+Coming soon
 
 
+# Erlang libraries
+
+Coming soon
 
 
+# Where to go next  [up](#table-of-contents)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#
+Coming soon
