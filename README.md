@@ -34,6 +34,9 @@
 
 
 ## Basic types
+
+[up](#table-of-contents)
+
 ``` elixir
 1            # integer
 0x1F         # integer
@@ -55,6 +58,9 @@ rem 10, 3
 
 
 ## Booleans
+
+[up](#table-of-contents)
+
 ```elixir
 # bool
 > true
@@ -72,6 +78,9 @@ false
 
 
 ## Atoms
+
+[up](#table-of-contents)
+
 
 ```elixir
 # an atom is its own value
@@ -98,6 +107,9 @@ true
 
 
 ## Strings
+
+[up](#table-of-contents)
+
 
 ``` elixir
 > "hellö"
@@ -128,6 +140,9 @@ true
 
 ## Anonymous functions
 
+[up](#table-of-contents)
+
+
 ```elixir
 > add = fn a, b -> a + b end
 
@@ -153,6 +168,9 @@ true
 
 
 ## (linked) Lists
+
+[up](#table-of-contents)
+
 
 ```elixir
 > [1, 2, true, :hello]
@@ -198,6 +216,9 @@ Lists are stored in memory as linked lists,
 
 
 ## Tuples
+
+[up](#table-of-contents)
+
 
 ```elixir
 > {1,2, :hello, false}
@@ -318,6 +339,9 @@ and, or, not  # only booleans
 
 ## case
 
+[up](#table-of-contents)
+
+
 ```elixir
 > case {1,2,3} do
 >      {1,2,3} -> "won't match"
@@ -359,6 +383,9 @@ and, or, not  # only booleans
 
 ## cond
 
+[up](#table-of-contents)
+
+
 `cond` check different conditions and find the first one that evaluates to `true`.
 
 ```elixir
@@ -397,6 +424,9 @@ and, or, not  # only booleans
 
 ## if and unless
 
+[up](#table-of-contents)
+
+
 ```elixir
 > if true do
 >     "this works"
@@ -418,6 +448,9 @@ and, or, not  # only booleans
 ```
 
 ## do / end blocks
+
+[up](#table-of-contents)
+
 
 `if/2` and `unless\2` are macros...
 
@@ -445,6 +478,9 @@ and, or, not  # only booleans
 
 ## UTF-8 and Unicode
 
+[up](#table-of-contents)
+
+
 ```elixir
 > string = "hełło"
 "hełło"
@@ -466,6 +502,9 @@ and, or, not  # only booleans
 ```
 
 ## Binaries (bitstrings)
+
+[up](#table-of-contents)
+
 
 a binary is defined using `<<>>`
 ```elixir
@@ -517,6 +556,9 @@ Where it's all about associative data structures.
 
 
 ## Keyword lists
+
+[up](#table-of-contents)
+
 
 Check out the special syntax: `[key: value]` .
 
@@ -587,6 +629,9 @@ for passing options to functions in Elixir.
 
 
 ## Maps
+
+[up](#table-of-contents)
+
 
 Because keyword lists are great for passing value to function, if you need a
 data structure, key-value store, then map is the way to go.
@@ -696,6 +741,9 @@ The special case of when keys are atoms
 
 ## Nested data structures
 
+[up](#table-of-contents)
+
+
 ```elixir
 > users = [
   john: %{name: "John", age: 27, languages: ["Erlang", "Ruby", "Elixir"]},
@@ -743,6 +791,9 @@ A module groups several function, e.g. the `String` module.
 
 ## Compilation
 
+[up](#table-of-contents)
+
+
 ```elixir
 $ cat math.ex
 
@@ -767,6 +818,9 @@ Elixir project structure :
 
 ## Scripted mode
 
+[up](#table-of-contents)
+
+
 While `.ex` files are meant to be compiled, `.exs` files are for scripting.
 
 ```
@@ -786,6 +840,9 @@ $ elixir math.exs
 
 
 ## Named functions
+
+[up](#table-of-contents)
+
 
 Private versus public function (`defp` vs. `def`)
 
@@ -839,6 +896,9 @@ end
 
 
 ## Function capturing
+
+[up](#table-of-contents)
+
 Using the arity notation - `name/arity`, to retrieve named function as function type.
 
 ```elixir
@@ -878,6 +938,9 @@ true
 
 
 ## Default arguments
+
+[up](#table-of-contents)
+
 
 ```elixir
 defmodule Concat do
@@ -977,6 +1040,9 @@ end
 
 ## Reduce and map algorithms
 
+[up](#table-of-contents)
+
+
 ```elixir
 # sum a list of numbers ... reduce algorithm
 defmodule Math do
@@ -1018,6 +1084,9 @@ In practice, recursion is not used in Elixir...
 
 ## Enumerables
 
+[up](#table-of-contents)
+
+
 Elixir provides the concept of enumerables and the `Enum` module to
 work with them. `list` and `map` are examples of enumerables, however
 the `Enum` module can work with any data type that implements the **Enumerable protocol**
@@ -1039,6 +1108,9 @@ the `Enum` module can work with any data type that implements the **Enumerable p
 
 ## Eager vs Lazy
 
+[up](#table-of-contents)
+
+
 All the functions in the ```Enum``` are eager, functions expect enumerable and return list back. When performing multiple operations, each operation generate an intermediate list...
 
 ```elixir
@@ -1052,6 +1124,9 @@ All the functions in the ```Enum``` are eager, functions expect enumerable and r
 
 
 ## Streams
+
+[up](#table-of-contents)
+
 
 `Stream`, a lazy alternative to `Enum`
 
@@ -1091,6 +1166,9 @@ uncommon to have tens of thousand of processes running simultaneously.
 
 ## spawn
 
+[up](#table-of-contents)
+
+
 ```elixir
 > spawn fn -> 1 + 2 end
 #PID<0.43.0>
@@ -1110,6 +1188,9 @@ true
 
 
 ## send and receive
+
+[up](#table-of-contents)
+
 
 ```elixir
 
@@ -1162,6 +1243,9 @@ Complete example...
 
 ## Links
 
+[up](#table-of-contents)
+
+
 Links are usefull when the failure of one process needs to propagate to another one.
 
 
@@ -1177,6 +1261,9 @@ Links are usefull when the failure of one process needs to propagate to another 
 
 ## Tasks
 
+[up](#table-of-contents)
+
+
 `spawn/1` and `spawn_link/1` are basic primitives for creating processes, `task`
 is the most common abstractions that build on top of them...
 
@@ -1189,6 +1276,9 @@ is the most common abstractions that build on top of them...
 
 
 ## State
+
+[up](#table-of-contents)
+
 
 Where to keep application configuration ? Processes are the most common answer.
 
@@ -1252,6 +1342,9 @@ true
 
 ## Agent
 
+[up](#table-of-contents)
+
+
 `Agent` is abstraction around state, it provides state, and name registration
 
 ```elixir
@@ -1275,6 +1368,9 @@ true
 
 ## The IO module
 
+[up](#table-of-contents)
+
+
 ```elixir
 > IO.puts "hello world"
 hello world
@@ -1292,6 +1388,9 @@ hello world
 
 
 ## The File module
+
+[up](#table-of-contents)
+
 
 ```elixir
 > {:ok, file} = File.open "Hello", [:write]
@@ -1339,6 +1438,9 @@ end
 
 ## The Path module
 
+[up](#table-of-contents)
+
+
 ```elixir
 > Path.join("foo", "bar")
 "foo/bar"
@@ -1350,6 +1452,9 @@ end
 
 
 ## Processes and group leaders
+
+[up](#table-of-contents)
+
 
 `IO` devices are modelled as process in Erlang, that allows different nodes in the
 same network to exchange file process in order to read/write between nodes.
@@ -1392,6 +1497,9 @@ hello
 
 
 ## `iodata` and `chardata`
+
+[up](#table-of-contents)
+
 
 Functions IO and File accept list (in addition to binary), in that case special
 care is needed specially if the file is opened without encoding. A list may
@@ -1441,6 +1549,9 @@ Note:
 
 ## alias
 
+[up](#table-of-contents)
+
+
 ```elixir
 > alias Math.List, as: List
 
@@ -1480,6 +1591,9 @@ true
 
 ## require
 
+[up](#table-of-contents)
+
+
 In order to use macros, you need to opt-in by requiring the module they
 are defined in.
 
@@ -1496,6 +1610,9 @@ true
 
 
 ## import
+
+[up](#table-of-contents)
+
 
 ```elixir
 # only: is a best practice, equivalent of avoiding Python's import *
@@ -1525,6 +1642,9 @@ Note: `import`ing a module automatically `require`s it.
 
 
 ## use
+
+[up](#table-of-contents)
+
 
 to bring external functionality into the current lexical scope.
 
@@ -1557,6 +1677,9 @@ end
 
 ## Module nesting
 
+[up](#table-of-contents)
+
+
 ```elixir
 # defining 2 modules: Foo and Foo.Bar
 defmodule Foo do
@@ -1576,6 +1699,9 @@ end
 ```
 
 ## Multi alias / immport / require / use
+
+[up](#table-of-contents)
+
 
 ```elixir
 # alias MyApp.Foo, MyApp.Bar and MyApp.Baz at once
@@ -1598,6 +1724,9 @@ Module attributes serve 3 purposes:
 
 
 ## As annotations
+
+[up](#table-of-contents)
+
 
 Some reserved attributes:
 
@@ -1623,6 +1752,9 @@ defmodule Math do
 
         ## Examples
 
+        [up](#table-of-contents)
+        
+
         iex> Math.sum(1, 2)
         3
 
@@ -1637,6 +1769,9 @@ end
 
 
 ## As constants
+
+[up](#table-of-contents)
+
 
 ```elixir
 defmodule MyServer do
@@ -1671,6 +1806,9 @@ end
 
 
 ## As temporary storage
+
+[up](#table-of-contents)
+
 
 `Plug` is a common foundation for building web libraries and framework.
 `Plug` allows developers to define their own plugs which can be run in a web server.
@@ -1715,6 +1853,9 @@ end
 
 ## Conclusion
 
+[up](#table-of-contents)
+
+
 Attributes are fundamental, they will really shine once combine with macros capability to do meta-programming.
 
 
@@ -1758,6 +1899,9 @@ end
 
 ## Accessing and updating structs
 
+[up](#table-of-contents)
+
+
 ```elixir
 > john = %User{}
 > john.name
@@ -1773,6 +1917,9 @@ end
 
 
 ## Structs are bare maps underneath
+
+[up](#table-of-contents)
+
 
 ``` elixir
 > is_map(john)
@@ -1800,6 +1947,9 @@ User
 ```
 
 ## Default values and required keys
+
+[up](#table-of-contents)
+
 
 ```elixir
 # nil is assumed when no default is provided
@@ -1869,6 +2019,9 @@ It is possible to implement protocols for all Elixir data types:
 
 ## Protocols and structs
 
+[up](#table-of-contents)
+
+
 The power of Elixir extensibility comes when protocols and structs are used together.
 
 Structs do not share protocol with maps...
@@ -1894,6 +2047,9 @@ end
 
 
 ## Implementing Any
+
+[up](#table-of-contents)
+
 
 Implementing protocols for many data types can be tedious.
 Elixir provides 2 options:
@@ -1934,6 +2090,9 @@ end
 
 ## Built-in protocols
 
+[up](#table-of-contents)
+
+
 ```elixir
 # the Enumerable protocol
 > Enum.map [1,2,3], fn(x) -> x * 2 end
@@ -1968,6 +2127,9 @@ A comprehension is made of 3 parts: generators, filters and collectables.
 
 
 ## Generators and filters
+
+[up](#table-of-contents)
+
 
 ```elixir
 # in the following...
@@ -2042,6 +2204,9 @@ end
 
 ## The `:into` option
 
+[up](#table-of-contents)
+
+
 Pass generator into different data structures than list.
 
 ```elixir
@@ -2072,6 +2237,9 @@ Pass generator into different data structures than list.
 
 
 ## Regular expressions
+
+[up](#table-of-contents)
+
 Sigils are one of the mecanism for working with textual representations.
 
 ```elixir
@@ -2102,6 +2270,9 @@ true
 ```
 
 ## Strings, char lists, and word lists sigils
+
+[up](#table-of-contents)
+
 
 Beside regular expressions, there are 3 other sigils:
 
