@@ -2307,7 +2307,290 @@ this is a string with \"double\" quotes, not 'single' ones"
 
 [up](#table-of-contents)
 
+These are not common in Elixir, but just in case,
+
+
+## Errors
+
+
+[up](#table-of-contents)
+
+
+
+Or when something goes wrong, like operations on wrong types,
+
+```elixir
+> :foo + 1
+** (ArithmeticError) bad argument in arithmetic expression
+     :erlang.+(:foo, 1)
+```
+
+You can raise yourself with `raise/1`
+
+
+```elixir
+> raise "oops"
+** (RuntimeError) oops
+
+
+# with more arguments
+> raise ArgumentError, message: "invalid argument foo"
+** (ArgumentError) invalid argument foo
+```
+
+
+Define your own exception with `defexception`,
+
+```elixir
+> defmodule MyError do
+>   defexception message: "default message"
+> end
+
+> raise MyError
+** (MyError) default message
+
+> raise MyError, message: "custom message"
+** (MyError) custom message
+```
+
+## Rescue
+
+[up](#table-of-contents)
+
+Errors can be **rescued** using `try/rescue` block,
+
+```elixir
+# 1. rescue the runtime error
+# 2. print the error itself
+> try do
+>   raise "oops"
+> rescue
+>   e in RuntimeError -> e
+> end
+%RuntimeError{message: "oops"}
+
+# you don't have to provide the error
+> try do
+>   raise "oops"
+> rescue
+>   RuntimeError -> "Error!"
+> end
+"Error!"
+```
+
+Best practices is not to rely on `try/rescue`, but leverage pattern
+matching instead,
+
+```elixir
+> File.read "hello"
+{:error, :enoent}
+
+> File.write "hello", "world"
+:ok
+
+> File.read "hello"
+{:ok, "world"}
+
+# putting all together,
+> case File.read "hello" do
+>   {:ok, body}      -> IO.puts "SUCCESS: #{body}"
+>   {:error, reason} -> IO.puts "ERROR: #{reason}"
+> end
+```
+
+Elixir leaves it up to the developer to make the decision, but if you really want an error use the `!` of the function
+
+```elixir
+> File.read! "unknown"
+** (File.Error) could not read file unknown: no such file or directory
+    (elixir) lib/file.ex:272: File.read!/1
+```
+
+## Throws
+
+[up](#table-of-contents)
+
+
+`try/rescue` are not recommended, because Elixir does not encourage
+**errors for contrl flow**.
+
+
+**Control flow** , that's what `Throw` is for,
+
+```elixir
+# find the first multiple of 13 in a list
+> try do
+>   Enum.each -50..50, fn(x) ->
+>     if rem(x, 13) == 0, do: throw(x)
+>   end
+>   "Got nothing,"
+> catch
+>   x -> "Got #{x}"
+> end
+"Got -39"
+
+
+# ... but instead do this
+> Enum.find -50..50, &(rem(&1, 13) == 0)
+```
+
+
+## Exits
+
+[up](#table-of-contents)
+
+
+Or how a process commits suicide,
+
+```elixir
+> spawn_link fn -> exit(1) end
+** (EXIT from #PID<0.56.0>) evaluator process exited with reason: 1
+
+
+# exit can be caught,
+> try do
+>   exit "I am exiting"
+> catch
+>   :exit, _ -> "no, really!?"
+> end
+"no, really!?"
+```
+
+Why would you do this? Leave it to the Supervisors.
+
+
+## After
+
+[up](#table-of-contents)
+
+
+For cleanup, unless the mess you're trying to clean already killed you -- `start_link`, this is a soft guarantee. Anyway you normally don't need it.
+
+
+```elixir
+> {:ok, file} = File.open "sample", [:utf8, :write]
+> try do
+>   IO.write file, "olá"
+>   raise "oops, something went wrong"
+> after
+>   File.close(file)
+> end
+** (RuntimeError) oops, something went wrong
+```
+
+
+## Else
+
+[up](#table-of-contents)
+
+
+when `try` finishes without a throw or an error,
+
+```elixir
+> x = 2
+2
+
+> try do
+>   1 / x
+> rescue
+>   ArithmeticError ->
+>     :infinity
+> else
+>   y when y < 1 and y > -1 ->
+>     :small
+>   _ ->
+>     :large
+> end
+:small
+```
+
+## Variables scope
+
+Bear in mind that variables inside `try/catch/rescue/after` blocks do not leak to the outer context. This is because the block might fail and the variables never bound.
+
+But you can store the whole value of the block,
+
+
+```elixir
+> try do
+>   raise "fail"
+>   what_happened = :did_not_raise
+> rescue
+>   _ -> what_happened = :rescued
+> end
+> what_happened
+** (RuntimeError) undefined function: what_happened/0
+
+# do this instead,
+> what_happened =
+>   try do
+>     raise "fail"
+>     :did_not_raise
+>   rescue
+>     _ -> :rescued
+>   end
+> what_happened
+:rescued
+```
+
+
+
+
+
+
+
+
+
+
+
+
+# Typespecs and behaviours
+
+[up](#table-of-contents)
+
 Coming soon
+
+
+# Erlang libraries
+
+[up](#table-of-contents)
+
+Coming soon
+
+
+# Where to go next
+
+[up](#table-of-contents)
+
+Coming soon
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # Typespecs and behaviours
