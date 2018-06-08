@@ -2544,34 +2544,6 @@ But you can store the whole value of the block,
 
 
 
-# Typespecs and behaviours
-
-[up](#table-of-contents)
-
-Coming soon
-
-
-# Erlang libraries
-
-[up](#table-of-contents)
-
-Coming soon
-
-
-# Where to go next
-
-[up](#table-of-contents)
-
-Coming soon
-
-
-
-
-
-
-
-
-
 
 
 
