@@ -23,6 +23,7 @@
 - [Sigils](#sigils)
 - [try, catch and rescue](#try-catch-and-rescue)
 - [Typespecs and behaviours](#typespecs-and-behaviours)
+- [Debugging](#debugging)
 - [Erlang libraries](#erlang-libraries)
 - [Where to go next](#where-to-go-next)
 
@@ -2679,6 +2680,13 @@ defmodule Parser do
 end
 ```
 
+
+
+# Debugging
+
+[up](#table-of-contents)
+
+Coming soon
 
 
 # Erlang libraries
