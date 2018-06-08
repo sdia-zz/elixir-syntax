@@ -2534,42 +2534,151 @@ But you can store the whole value of the block,
 ```
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # Typespecs and behaviours
 
 [up](#table-of-contents)
 
-Coming soon
+Elixir is dynamic, but sometime **typespecs** are usefull.
+**Typespecs** are a notation used for:
+
+
+* declaring functions signatures,
+* declaring custom data types
+
+
+
+## Function specifications
+
+
+[up](#table-of-contents)
+
+
+How to spec a function,
+
+```elixir
+# a function that takes a number and returns an integer,
+@spec myfunction(number) :: integer
+def myfunction(n), do: #...
+
+
+# compound is possible
+# e.g., this function returns a list of integer
+@spec myfunction(number) :: [integer]
+def myfunction(n), do: #...
+```
+
+
+Check [the typespecs docs](https://hexdocs.pm/elixir/typespecs.html)
+
+
+
+## Custom types
+
+[up](#table-of-contents)
+
+
+Use `@type` directive,
+
+```elixir
+# instead of this,
+defmodule Geometry do
+  @spec create_point(number, number) :: {number, number}
+  def create_point(x,y), do: {x, y}
+
+  @spec create_vector({number, number}, {number, number}) :: {number, number}
+  def create_vector({x, y}, {u, v}), do: {u-x, v-y}
+end
+
+
+# what you want is actually this,
+defmodule Geometry do
+  @typedoc """
+  Building Geometry library since Pythagore!
+  """
+
+  @type point :: {number, number}
+  @type vector :: {number, number}
+
+  @spec create_point(number, number) :: point
+  def create_point(x,y), do: {x, y}
+
+  @spec create_vector(point, point) :: vector
+  def create_vector({x, y}, {u, v}), do: {u-x, v-y}
+
+end
+
+# you can even export the type from module,
+
+defmodule SomeOtherModule do
+  @spec vector_product(Geometry.vector, Geometry.vector) :: Geometry.vector
+  def vector_product ...
+end
+```
+
+Once you have **Typespecs** you can use [Dialyzer](http://www.erlang.org/doc/man/dialyzer.html).
+
+
+
+## Behaviours
+
+
+[up](#table-of-contents)
+
+
+**Behaviours** provide a way to
+
+
+* define a set of functions that have to be implemented by a module,
+* ensure that a module implements all the function sin that set
+
+
+E.g., let's implement a bunch of parser. Their behaviour will be
+represented by `parse/1` and `extensions/0` functions.
+
+
+```elixir
+# let's create a parser behaviour
+defmodule Parser do
+  @callback parse(String.t) :: {:ok, term} | {:error, String.t}
+  @callback extensions() :: [String.t]
+end
+
+
+# let's adopt the behaviour
+defmodule JSONParser do
+  @behaviour Parser
+
+  def parser(str), do: "" # sthg
+  def extensions, do: ["json"]
+end
+
+defmodule YAMLParser do
+  @behaviour Parser
+
+  def parse(str), do: ""  # sthg
+  def extensions, do: ["yaml"]
+end
+```
+
+**Behaviours** are frequently used with dynamic dispatching.
+
+
+```elixir
+# let's add a parse! that dispatches dynamically to implementation
+# btw it raises if sthg goes wrong,
+defmodule Parser do
+  @callback parse(String.t) :: {:ok, term} | {:error, String.t}
+  @callback extensions() :: [String.t]
+
+  def parse!(implementation, contents) do
+    case implementation.parse(contents) do
+      {:ok, data}      -> data
+      {:error, reason} -> raise ArgumentError, "parsing error: #{reason}"
+    end
+  end
+end
+```
+
 
 
 # Erlang libraries
