@@ -27,37 +27,11 @@
 - [Where to go next](#where-to-go-next)
 
 
-
-
-
-
-01. Introduction
-02. Basic
-03. Basic operators
-04. Pattern matching
-05. case, cond and if
-06. Binaries, strings and char lists
-07. Keywords and maps
-08. Modules and Functions
-09. Recursion
-10. Enumerables and streams
-11. Processes
-12. IO and the file system
-13. alias, require and import
-14. Module attributes
-15. Structs
-16. Protocols
-17. Comprehension
-18. Sigils
-19. try, catch and rescue
-20. Typespecs and behaviours
-21. Erlang libraries
-22. Where to go next
-
-
-
-
 # Basic types
+
+
+[up](#table-of-contents)
+
 
 ## Basic types
 ``` elixir
@@ -266,6 +240,10 @@ Elixir guidance
 
 # Basic operators
 
+
+[up](#table-of-contents)
+
+
 ```elixir
 +, -, *, /, div/2, rem/2   # arithmetics
 
@@ -282,6 +260,10 @@ and, or, not  # only booleans
 
 
 # Pattern matching
+
+
+[up](#table-of-contents)
+
 
 `=` is actually called _the match operator_
 
@@ -329,6 +311,10 @@ and, or, not  # only booleans
 
 
 # case, cond and if
+
+
+[up](#table-of-contents)
+
 
 ## case
 
@@ -453,6 +439,10 @@ and, or, not  # only booleans
 
 # Binaries, strings and char lists
 
+
+[up](#table-of-contents)
+
+
 ## UTF-8 and Unicode
 
 ```elixir
@@ -518,6 +508,10 @@ stop page 51, to be continued
 
 
 # Keyword lists and Maps
+
+
+[up](#table-of-contents)
+
 
 Where it's all about associative data structures.
 
@@ -727,6 +721,10 @@ The special case of when keys are atoms
 
 
 # Modules and Functions
+
+
+[up](#table-of-contents)
+
 
 A module groups several function, e.g. the `String` module.
 
@@ -953,6 +951,10 @@ warning: this clause cannot match because a previous clause at line 2 always mat
 
 # Recursion
 
+
+[up](#table-of-contents)
+
+
 Because of immutability recursion is needed...
 
 
@@ -1009,6 +1011,10 @@ In practice, recursion is not used in Elixir...
 ```
 
 # Enumerables and streams
+
+
+[up](#table-of-contents)
+
 
 ## Enumerables
 
@@ -1075,6 +1081,10 @@ All the functions in the ```Enum``` are eager, functions expect enumerable and r
 
 
 # Processes
+
+
+[up](#table-of-contents)
+
 
 Elixir's processes are extremely lightweight in terms of memory and CPU, it's not
 uncommon to have tens of thousand of processes running simultaneously.
@@ -1258,6 +1268,11 @@ true
 
 # IO and the file system
 
+
+[up](#table-of-contents)
+
+
+
 ## The IO module
 
 ```elixir
@@ -1397,6 +1412,10 @@ hello world
 
 
 # alias, require and import
+
+
+[up](#table-of-contents)
+
 
 ```elixir
 # alias the module so it can be called as Bar instead of Foo.Bar
@@ -1567,6 +1586,10 @@ end
 
 # Module attributes
 
+
+[up](#table-of-contents)
+
+
 Module attributes serve 3 purposes:
 
 1. annotate the module with info to be used by user or vm
@@ -1697,6 +1720,9 @@ Attributes are fundamental, they will really shine once combine with macros capa
 
 # Structs
 
+
+[up](#table-of-contents)
+
 Remember about maps:
 
 ```elixir
@@ -1798,6 +1824,10 @@ User
 
 
 # Protocols
+
+
+[up](#table-of-contents)
+
 
 Protocols are mechanism to achieve polymorphism. Let's implement a generic `size` protocols...
 
@@ -1926,6 +1956,10 @@ end
 
 # Comprehensions
 
+
+[up](#table-of-contents)
+
+
 ```elixir
 > for n <- [1,2,3,4,5], do: n * n
 ```
@@ -2033,6 +2067,10 @@ Pass generator into different data structures than list.
 
 # Sigils
 
+
+[up](#table-of-contents)
+
+
 ## Regular expressions
 Sigils are one of the mecanism for working with textual representations.
 
@@ -2096,15 +2134,21 @@ this is a string with \"double\" quotes, not 'single' ones"
 
 # try, catch and rescue
 
+[up](#table-of-contents)
+
 Coming soon
 
 
 # Typespecs and behaviours
 
+[up](#table-of-contents)
+
 Coming soon
 
 
 # Erlang libraries
+
+[up](#table-of-contents)
 
 Coming soon
 
