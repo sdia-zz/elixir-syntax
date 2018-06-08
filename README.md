@@ -1,15 +1,42 @@
 
+
+- [Table of contents](#table-of-contents)
+- [Basic types](#basic-types)
+- [Basic operators](#basic-operators)
+- [Pattern matching](#pattern-matching)
+- [case, cond and if](#case-cond-and-if)
+- [Binaries, strings and char lists](#binaries-strings-and-char-lists)
+- [Keyword lists and Maps](#keyword-lists-and-maps)
+- [Modules and Functions](#modules-and-functions)
+- [Recursion](#recursion)
+- [Enumerables and streams](#enumerables-and-streams)
+- [Processes](#processes)
+- [IO and the file system](#io-and-the-file-system)
+- [alias, require and import](#alias-require-and-import)
+- [Module attributes](#module-attributes)
+- [Structs](#structs)
+- [Protocols](#protocols)
+- [Comprehensions](#comprehensions)
+- [Sigils](#sigils)
+- [try, catch and rescue](#try-catch-and-rescue)
+- [Typespecs and behaviours](#typespecs-and-behaviours)
+- [Erlang libraries](#erlang-libraries)
+- [Where to go next](#where-to-go-next)
+
+
+
+
 # Table of contents
 
-1. Introduction
-2. Basic types
-3. Basic operators
-4. Pattern matching
-5. case, cond and if
-6. Binaries, strings and char lists
-7. Keywords and maps
-8. Modules and Functions
-9. Recursion
+01. Introduction
+02. Basic
+03. Basic operators
+04. Pattern matching
+05. case, cond and if
+06. Binaries, strings and char lists
+07. Keywords and maps
+08. Modules and Functions
+09. Recursion
 10. Enumerables and streams
 11. Processes
 12. IO and the file system
@@ -29,7 +56,7 @@
 
 # Basic types
 
-## Basics
+## Basic types
 ``` elixir
 1            # integer
 0x1F         # integer
