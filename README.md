@@ -343,7 +343,7 @@ and, or, not  # only booleans
 
 
 ```elixir
-> case {1,2,3} do
+> case {4,5,6} do
 >      {1,2,3} -> "won't match"
 >      {1,x,3} -> "match and bind x to 2"
 >            _ -> "match any value"
@@ -1753,7 +1753,7 @@ defmodule Math do
         ## Examples
 
         [up](#table-of-contents)
-        
+
 
         iex> Math.sum(1, 2)
         3
